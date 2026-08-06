@@ -1,1 +1,0 @@
-Telegram AI Assistant starter. Upload all files to the repository root.
