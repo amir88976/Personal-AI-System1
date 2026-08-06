@@ -1,8 +1,6 @@
 import os
 from dotenv import load_dotenv
 
-from openai import OpenAI
-
 from telegram import Update
 from telegram.ext import (
     Application,
@@ -12,75 +10,36 @@ from telegram.ext import (
     filters
 )
 
-
 load_dotenv()
 
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-AI_KEY = os.getenv("AI_KEY")
-
-
-client = OpenAI(
-    api_key=AI_KEY
-)
+TOKEN = os.getenv("BOT_TOKEN")
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "🤖 دستیار هوش مصنوعی آنلاین شد."
+        "نسخه جدید فعال شد ✅"
     )
 
 
-def ask_ai(message):
-
-    try:
-        result = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content":
-                    "تو یک دستیار هوش مصنوعی حرفه‌ای هستی. "
-                    "فارسی جواب بده و دقیق کمک کن."
-                },
-                {
-                    "role": "user",
-                    "content": message
-                }
-            ]
-        )
-
-        return result.choices[0].message.content
-
-
-    except Exception as e:
-        return "خطا در ارتباط با هوش مصنوعی: " + str(e)
-
-
-
-async def chat(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
-    user_text = update.message.text
+async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text
 
     await update.message.reply_text(
-        "⏳ دارم فکر می‌کنم..."
+        "من نسخه جدید هستم 🤖\n\n"
+        "پیام تو:\n"
+        + text
     )
-
-    answer = ask_ai(user_text)
-
-    await update.message.reply_text(answer)
-
 
 
 def main():
 
-    if not BOT_TOKEN:
-        print("BOT_TOKEN missing")
+    print("NEW VERSION STARTED")
+
+    if not TOKEN:
+        print("BOT_TOKEN پیدا نشد")
         return
 
-    app = Application.builder().token(
-        BOT_TOKEN
-    ).build()
-
+    app = Application.builder().token(TOKEN).build()
 
     app.add_handler(
         CommandHandler(
@@ -89,19 +48,14 @@ def main():
         )
     )
 
-
     app.add_handler(
         MessageHandler(
             filters.TEXT & ~filters.COMMAND,
-            chat
+            message_handler
         )
     )
 
-
-    print("AI BOT STARTED")
-
     app.run_polling()
-
 
 
 if __name__ == "__main__":
