@@ -59,4 +59,6 @@ app.add_handler(
 
 print("Bot is running...")
 
-app.run_polling()
+app.run_polling(
+    close_loop=False
+)
